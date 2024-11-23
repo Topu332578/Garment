@@ -1,0 +1,311 @@
+package oop.lab.task.pkg3;
+
+import java.util.*;
+
+class Garment {
+
+    public String id;
+    public String name;
+    public String description;
+    public String size;
+    public String color;
+    public double price;
+    public int stockQuantity;
+
+    // Constructor for Garment class
+    public Garment(String id, String name, String description, String size, String color, double price, int stockQuantity) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.size = size;
+        this.color = color;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+    }
+
+    void updateStock(int quantity) {
+        this.stockQuantity = quantity;
+    }
+
+    double calculateDiscountPrice(double discountPercentage) {
+        double discount = price * (discountPercentage / 100);
+        return price - discount;
+    }
+}
+
+class Fabric {
+
+    public String id;
+    public String type;
+    public String color;
+    public double pricePerMeter;
+
+    // Constructor for Fabric class
+    public Fabric(String id, String type, String color, double pricePerMeter) {
+        this.id = id;
+        this.type = type;
+        this.color = color;
+        this.pricePerMeter = pricePerMeter;
+    }
+
+    double calculateCost(double meters) {
+        return pricePerMeter * meters;
+    }
+}
+
+class Supplier {
+
+    public String id;
+    public String name;
+    public String contactInfo;
+    List<Fabric> suppliedFabric = new ArrayList<>();
+
+    // Constructor for Supplier class
+    public Supplier(String id, String name, String contactInfo) {
+        this.id = id;
+        this.name = name;
+        this.contactInfo = contactInfo;
+    }
+
+    void addFabric(Fabric fabric) {
+        suppliedFabric.add(fabric);
+    }
+
+    List<Fabric> getSuppliedFabrics() {
+        return suppliedFabric;
+    }
+}
+
+class Order {
+
+    public String orderId;
+    public Date orderDate;
+    public List<Garment> garments = new ArrayList<>();
+    private double totalAmount;
+
+    // Constructor for Order class
+    public Order(String orderId, Date orderDate) {
+        this.orderId = orderId;
+        this.orderDate = orderDate;
+    }
+
+    void addGarment(Garment garment) {
+        garments.add(garment);
+    }
+
+    double calculateTotalAmount() {
+        totalAmount = 0; // Reset before recalculating
+        for (Garment g : garments) {
+            totalAmount += g.price;
+        }
+        return totalAmount;
+    }
+
+    void printOrderDetails() {
+        System.out.println("--------------------------");
+        System.out.println("Order Details");
+        System.out.println("--------------------------");
+        for (Garment g : garments) {
+            System.out.println("Name: " + g.name);
+            System.out.println("Price: " + g.price);
+            System.out.println("Description: " + g.description);
+            System.out.println("--------------------------");
+        }
+    }
+}
+
+class Customer {
+
+    public String customerId;
+    public String name;
+    public String email;
+    public String phone;
+
+    // Constructor for Customer class
+    public Customer(String customerId, String name, String email, String phone) {
+        this.customerId = customerId;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+    }
+
+    void placeOrder(Order order) {
+        order.printOrderDetails();
+        System.out.println("Order Placed");
+    }
+}
+
+class Inventory {
+
+    List<Garment> garments = new ArrayList<>();
+
+    void addGarment(Garment garment) {
+        garments.add(garment);
+    }
+
+    void removeGarment(String id) {
+        garments.removeIf(g -> g.id.equals(id));
+    }
+
+    Garment findGarment(String id) {
+        for (Garment g : garments) {
+            if (g.id.equals(id))
+                return g;
+        }
+        return null;
+    }
+
+    void printGarments() {
+        if (garments.isEmpty()) {
+            System.out.println("No garments in inventory.");
+        } else {
+            System.out.println("Garments in Inventory:");
+            for (Garment g : garments) {
+                System.out.println("- " + g.name + " (" + g.color + ", Size: " + g.size + ")");
+            }
+        }
+    }
+}
+
+public class OopLabTask3 {
+
+    static Scanner scanner = new Scanner(System.in);
+    static Inventory inventory = new Inventory();
+    static List<Supplier> suppliers = new ArrayList<>();
+    static List<Order> orders = new ArrayList<>();
+
+    public static void main(String[] args) {
+        while (true) {
+            System.out.println("\n--- Garment Management System ---");
+            System.out.println("1. Add Garment");
+            System.out.println("2. View Inventory");
+            System.out.println("3. Remove Garment");
+            System.out.println("4. Add Supplier");
+            System.out.println("5. View Suppliers");
+            System.out.println("6. Place Order");
+            System.out.println("7. View Orders");
+            System.out.println("8. Exit");
+            System.out.print("Enter your choice: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    addGarment();
+                    break;
+                case 2:
+                    inventory.printGarments();
+                    break;
+                case 3:
+                    removeGarment();
+                    break;
+                case 4:
+                    addSupplier();
+                    break;
+                case 5:
+                    viewSuppliers();
+                    break;
+                case 6:
+                    placeOrder();
+                    break;
+                case 7:
+                    viewOrders();
+                    break;
+                case 8:
+                    System.out.println("Exiting...");
+                    return;
+                default:
+                    System.out.println("Invalid choice! Try again.");
+            }
+        }
+    }
+
+    static void addGarment() {
+        System.out.print("Enter Garment ID: ");
+        String id = scanner.nextLine();
+        System.out.print("Enter Garment Name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter Description: ");
+        String description = scanner.nextLine();
+        System.out.print("Enter Size: ");
+        String size = scanner.nextLine();
+        System.out.print("Enter Color: ");
+        String color = scanner.nextLine();
+        System.out.print("Enter Price: ");
+        double price = scanner.nextDouble();
+        System.out.print("Enter Stock Quantity: ");
+        int stockQuantity = scanner.nextInt();
+
+        Garment garment = new Garment(id, name, description, size, color, price, stockQuantity);
+        inventory.addGarment(garment);
+        System.out.println("Garment added successfully!");
+    }
+
+    static void removeGarment() {
+        System.out.print("Enter Garment ID to remove: ");
+        String id = scanner.nextLine();
+        inventory.removeGarment(id);
+        System.out.println("Garment removed successfully!");
+    }
+
+    static void addSupplier() {
+        System.out.print("Enter Supplier ID: ");
+        String id = scanner.nextLine();
+        System.out.print("Enter Supplier Name: ");
+        String name = scanner.nextLine();
+        System.out.print("Enter Contact Info: ");
+        String contactInfo = scanner.nextLine();
+
+        Supplier supplier = new Supplier(id, name, contactInfo);
+        suppliers.add(supplier);
+        System.out.println("Supplier added successfully!");
+    }
+
+    static void viewSuppliers() {
+        if (suppliers.isEmpty()) {
+            System.out.println("No suppliers added yet.");
+        } else {
+            System.out.println("Suppliers:");
+            for (Supplier s : suppliers) {
+                System.out.println("- " + s.name + " (Contact: " + s.contactInfo + ")");
+            }
+        }
+    }
+
+    static void placeOrder() {
+        System.out.print("Enter Order ID: ");
+        String orderId = scanner.nextLine();
+        Order order = new Order(orderId, new Date());
+
+        System.out.println("Adding garments to the order...");
+        while (true) {
+            System.out.print("Enter Garment ID to add (or 'done' to finish): ");
+            String id = scanner.nextLine();
+            if (id.equalsIgnoreCase("done")) break;
+
+            Garment garment = inventory.findGarment(id);
+            if (garment != null) {
+                order.addGarment(garment);
+                System.out.println("Garment added to order.");
+            } else {
+                System.out.println("Garment not found!");
+            }
+        }
+
+        orders.add(order);
+        System.out.println("Order placed successfully!");
+    }
+
+    static void viewOrders() {
+        if (orders.isEmpty()) {
+            System.out.println("No orders placed yet.");
+        } else {
+            System.out.println("Orders:");
+            for (Order o : orders) {
+                System.out.println("Order ID: " + o.orderId + ", Total Amount: " + o.calculateTotalAmount());
+                o.printOrderDetails();
+            }
+        }
+    }
+}
